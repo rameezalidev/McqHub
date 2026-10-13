@@ -47,7 +47,8 @@ const deleteCategory = async (req, res) => {
 
 const addQuestion = async (req, res) => {
     try {
-        const { categoryId, question, options, correctAnswer, difficultyLevel } = req.body;
+        const { question, options, correctAnswer, difficultyLevel } = req.body;
+        const { categoryId } = req.params;
         if (!mongoose.isValidObjectId(categoryId)) {
             return res.status(400).json({
                 message: 'Invalid category ID'
@@ -90,13 +91,27 @@ const addQuestion = async (req, res) => {
     }
 }
 
-const deleteQuestion = async (req,res) => {
-    const { id } = req.params;
+const deleteQuestion = async (req, res) => {
+    const { categoryId, questionId } = req.params;
+
     try {
-        const question = await Question.findByIdAndDelete(id);
+        if (
+            !mongoose.isValidObjectId(categoryId) ||
+            !mongoose.isValidObjectId(questionId)
+        ) {
+            return res.status(400).json({
+                message: 'Invalid category ID or question ID'
+            });
+        }
+
+        const question = await Question.findOneAndDelete({
+            _id: questionId,
+            category: categoryId
+        });
+
         if (!question) {
             return res.status(404).json({
-                message: 'Question not found'
+                message: 'Question not found in this category'
             });
         }
 
@@ -108,7 +123,7 @@ const deleteQuestion = async (req,res) => {
             message: 'Internal server error'
         });
     }
-}
+};
 
 
 module.exports = { addCategory, deleteCategory, addQuestion, deleteQuestion };
