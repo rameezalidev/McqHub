@@ -2,12 +2,12 @@ const express = require('express');
 const { addCategory, deleteCategory, addQuestion, deleteQuestion } = require('../controllers/adminController');
 const authorizeRoles = require('../middlewares/role');
 const auth = require('../middlewares/auth');
-const Router = express.Router();
+const router = express.Router();
 
-Router.post('/category', auth, authorizeRoles("admin"), addCategory);
-Router.delete('/category/:id', auth, authorizeRoles("admin"), deleteCategory);
+router.post('/category', auth, authorizeRoles("admin"), addCategory);
+router.delete('/category/:id', auth, authorizeRoles("admin"), deleteCategory);
 
 
-Router.post('/question', auth, authorizeRoles("admin"), addQuestion);
-Router.delete('/question/:id', auth, authorizeRoles("admin"), deleteQuestion);
-module.exports = Router;
+router.post('/question', auth, authorizeRoles("admin"), addQuestion);
+router.delete('/question/:id', auth, authorizeRoles("admin"), deleteQuestion);
+module.exports = router;
