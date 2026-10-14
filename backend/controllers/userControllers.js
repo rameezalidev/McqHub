@@ -136,6 +136,43 @@ const getQuizHistory = async (req,res) => {
     } 
 }
 
+
+const deleteQuizHistory = async (req, res) => {
+    try {
+        const { attemptId } = req.params;
+
+        if (!mongoose.isValidObjectId(attemptId)) {
+            return res.status(400).json({
+                message: 'Invalid attempt ID'
+            });
+        }
+
+        const result = await QuizAttempt.findOneAndDelete({
+            _id: attemptId,
+            user: req.user.userId
+        });
+
+        if (!result) {
+            return res.status(404).json({
+                message: 'Quiz attempt not found'
+            });
+        }
+
+        return res.status(200).json({
+            message: 'Quiz attempt deleted successfully',
+            data: result
+        });
+    } catch (error) {
+        console.error(error.message);
+
+        return res.status(500).json({
+            message: 'Internal server error'
+        });
+    }
+};
+
+
+
 const getDashboardStats = async (req, res) => {
     try {
         const userId = req.user.userId;
@@ -187,4 +224,4 @@ const getDashboardStats = async (req, res) => {
         });
     }
 };
-module.exports = { getCategories, getQuestionByCategory, submitQuiz, getQuizHistory, getDashboardStats }
+module.exports = { getCategories, getQuestionByCategory, submitQuiz, getQuizHistory,deleteQuizHistory, getDashboardStats }
