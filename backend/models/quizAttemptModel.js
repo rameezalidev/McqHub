@@ -50,10 +50,7 @@ const quizAttemptSchema = new mongoose.Schema({
     questions: {
         type: [attemptedQuestionSchema],
         required: true,
-        validate: {
-            validator: questions => questions.length >= 10,
-            message: 'A quiz must contain atleast 10 questions'
-        }
+       
     },
     score: {
         type: Number,
@@ -62,8 +59,7 @@ const quizAttemptSchema = new mongoose.Schema({
     },
     totalQuestions: {
         type: Number,
-        required: true,
-        min: 10
+        required: true
     }
 }, {
     timestamps: true
