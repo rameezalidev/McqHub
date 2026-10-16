@@ -1,4 +1,3 @@
-/* StatCard Styling (Flexbox Only - No Grid) */
 .stat-card {
   display: flex;
   flex-direction: column;

@@ -1,4 +1,3 @@
-/* Quiz Page Styling (Flexbox Only - No Grid) */
 .quiz-page {
   background-color: var(--bg-page);
   min-height: calc(100vh - 70px);
@@ -263,9 +262,6 @@
   color: var(--text-muted);
 }
 
-/* ========================================================
-   Result / Score Screen (Flexbox Only - No Grid)
-   ======================================================== */
 .result-card {
   display: flex;
   flex-direction: column;

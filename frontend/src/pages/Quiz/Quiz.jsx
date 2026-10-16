@@ -271,7 +271,7 @@ function Quiz() {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
         if (prev <= 1) {
-          // 60 seconds expired for this question
+
           if (currentQuestion < questions.length - 1) {
             const nextIndex = currentQuestion + 1;
             setCurrentQuestion(nextIndex);
@@ -292,25 +292,12 @@ function Quiz() {
     return () => clearInterval(timer);
   }, [show, questions.length, currentQuestion, categoryId, handleSubmit]);
 
-  // Prevent leaving or closing tab accidentally while quiz is active
-  useEffect(() => {
-    function handleBeforeUnload(e) {
-      if (!show && questions.length > 0) {
-        e.preventDefault();
-        e.returnValue = "";
-      }
-    }
-    window.addEventListener("beforeunload", handleBeforeUnload);
-    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [show, questions.length]);
-
-  // Retake quiz
   function handleRetake() {
     clearQuizData();
     window.location.reload();
   }
 
-  // Return to Dashboard (only allowed after quiz completion or if empty)
+
   function handleBackToDashboard() {
     clearQuizData();
     navigate("/dashboard");
@@ -340,7 +327,7 @@ function Quiz() {
                     Loading Quiz Questions...
                   </h3>
                   <p style={{ color: "var(--text-muted)", fontSize: "0.88rem" }}>
-                    Generating with AI or loading from database...
+                    Generating Quiz...
                   </p>
                 </div>
               ) : questions.length === 0 ? (
