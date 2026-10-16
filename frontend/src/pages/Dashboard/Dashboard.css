@@ -1,4 +1,3 @@
-/* Dashboard Styling (Flexbox Only - No Grid) */
 .dashboard-page {
   background-color: var(--bg-page);
   min-height: calc(100vh - 70px);
@@ -173,7 +172,6 @@
   color: var(--text-muted);
 }
 
-/* Category Cards Layout (Flexbox Only - No Grid) */
 .categories-flex-wrap {
   display: flex;
   flex-direction: row;

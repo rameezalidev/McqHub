@@ -1,11 +1,5 @@
-/* ========================================================
-   MCQHub - Global Styles & Design System
-   Modern, Professional Royal Purple & Sunset Coral Palette
-   Strictly Flexbox layouts only (No CSS Grid)
-   ======================================================== */
 
 :root {
-  /* Color Palette - Unique Royal Violet & Coral (No Blue/Green) */
   --primary: #6c47ff;
   --primary-hover: #5835e5;
   --primary-light: #f3f0ff;
