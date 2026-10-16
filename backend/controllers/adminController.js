@@ -3,6 +3,7 @@ const Question = require('../models/questionModel');
 const mongoose = require('mongoose');
 const addCategory = async (req, res) => {
     const { name, description } = req.body;
+    console.log("In add cat")
     try {
         if (!name) {
             return res.status(400).json({ message: 'Name is required' });

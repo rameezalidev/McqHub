@@ -20,7 +20,7 @@ router.post("/generate", async (req, res) => {
         }
 
         const response = await ai.models.generateContent({
-            model: "gemini-3.5-flash",
+            model: "gemini-3.7-flash",
             contents: prompt.trim()
         });
         const answer = JSON.parse(response.text);
@@ -28,7 +28,7 @@ router.post("/generate", async (req, res) => {
         for(let i of answer.mcqs) {
             await Question.create({
                 ...i, 
-                category: new mongoose.Types.ObjectId("6acd67560e38c5b6f93fa819")
+                category: new mongoose.Types.ObjectId("6acfdd5335ddc9ba028c0cd6")
             })
         }
         return res.status(200).json({
