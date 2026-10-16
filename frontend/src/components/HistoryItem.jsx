@@ -1,11 +1,36 @@
-function HistoryItem({ score, createdAt, onDelete }) {
+function formatDate(dateStr) {
+  if (!dateStr) return "Recently";
+  try {
+    const d = new Date(dateStr);
+    return d.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  } catch {
+    return dateStr;
+  }
+}
+
+function HistoryItem({ score, totalQuestions = 10, createdAt, onDelete }) {
+  const percentage = Math.round((score / totalQuestions) * 100);
+
   return (
     <div className="history-item">
-      <div>
-        <p className="history-score">{score}/10</p>
-        <p className="history-date">{createdAt}</p>
+      <div className="history-item-left">
+        <div className="history-score-badge">
+          <span className="history-score-number">{score}</span>
+          <span className="history-score-total">/{totalQuestions}</span>
+        </div>
+        <div className="history-details">
+          <div className="history-percentage-tag">{percentage}% Score</div>
+          <div className="history-date">{formatDate(createdAt)}</div>
+        </div>
       </div>
-      <button type="button" className="secondary-btn" onClick={onDelete}>
+
+      <button type="button" className="button button-danger history-delete-btn" onClick={onDelete}>
         Delete
       </button>
     </div>

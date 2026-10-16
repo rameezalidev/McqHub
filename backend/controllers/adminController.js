@@ -126,5 +126,27 @@ const deleteQuestion = async (req, res) => {
     }
 };
 
+const getQuestionsByCategory = async (req, res) => {
+    const { categoryId } = req.params;
 
-module.exports = { addCategory, deleteCategory, addQuestion, deleteQuestion };
+    try {
+        if (!mongoose.isValidObjectId(categoryId)) {
+            return res.status(400).json({
+                message: 'Invalid category ID'
+            });
+        }
+
+        const questions = await Question.find({ category: categoryId });
+
+        return res.status(200).json({
+            message: 'Questions retrieved successfully',
+            data: questions
+        });
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Internal server error'
+        });
+    }
+};
+
+module.exports = { addCategory, deleteCategory, addQuestion, deleteQuestion, getQuestionsByCategory };
