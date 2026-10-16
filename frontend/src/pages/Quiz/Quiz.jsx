@@ -344,7 +344,7 @@ function Quiz() {
                     No Questions Found
                   </h3>
                   <p style={{ color: "var(--text-muted)", fontSize: "0.92rem", marginBottom: "24px", maxWidth: "420px" }}>
-                    No questions are currently available for <strong>{categoryName || "this category"}</strong> in MongoDB. You can add questions in the Admin panel or pick another topic.
+                    No questions are currently available for <strong>{categoryName || "this category"}</strong> 
                   </p>
                   <button
                     type="button"
