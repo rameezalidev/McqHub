@@ -11,7 +11,7 @@ const ai = new GoogleGenAI({
 
 router.post("/generate", async (req, res) => {
     try {
-        const { prompt } = req.body;
+        const { prompt, categoryId } = req.body;
 
         if (typeof prompt !== "string" || !prompt.trim()) {
             return res.status(400).json({
@@ -23,17 +23,28 @@ router.post("/generate", async (req, res) => {
             model: "gemini-3.7-flash",
             contents: prompt.trim()
         });
-        const answer = JSON.parse(response.text);
 
-        for(let i of answer.mcqs) {
-            await Question.create({
+        let rawText = response.text || "";
+        rawText = rawText.replace(/```json/gi, "").replace(/```/g, "").trim();
+        const answer = JSON.parse(rawText);
+
+        const targetCategory = categoryId && mongoose.isValidObjectId(categoryId)
+            ? new mongoose.Types.ObjectId(categoryId)
+            : new mongoose.Types.ObjectId("6acfdd5335ddc9ba028c0cd6");
+
+        const createdQuestions = [];
+        for (let i of (answer.mcqs || [])) {
+            const doc = await Question.create({
                 ...i, 
-                category: new mongoose.Types.ObjectId("6acfdd5335ddc9ba028c0cd6")
-            })
+                category: targetCategory
+            });
+            createdQuestions.push(doc);
         }
+
         return res.status(200).json({
             success: true,
-            answer
+            answer,
+            data: createdQuestions
         });
     } catch (error) {
         console.error("Gemini API error:", error.message);

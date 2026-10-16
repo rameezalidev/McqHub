@@ -1,4 +1,133 @@
-*{
-    margin: 0;
-    padding: 0;
+/* ========================================================
+   MCQHub - Global Styles & Design System
+   Modern, Professional Royal Purple & Sunset Coral Palette
+   Strictly Flexbox layouts only (No CSS Grid)
+   ======================================================== */
+
+:root {
+  /* Color Palette - Unique Royal Violet & Coral (No Blue/Green) */
+  --primary: #6c47ff;
+  --primary-hover: #5835e5;
+  --primary-light: #f3f0ff;
+  --primary-gradient: linear-gradient(135deg, #7c3aed 0%, #6c47ff 100%);
+
+  --accent: #ff6b4a;
+  --accent-hover: #ea580c;
+  --accent-light: #fff3ed;
+  --accent-amber: #f59e0b;
+  --accent-amber-light: #fef3c7;
+
+  --bg-page: #f8f9fd;
+  --bg-card: #ffffff;
+  --bg-card-alt: #fbfbfe;
+
+  --text-main: #1e1b4b;
+  --text-body: #475569;
+  --text-muted: #8492a6;
+  --text-white: #ffffff;
+
+  --border-light: #ebe8f5;
+  --border-focus: #7c3aed;
+
+  --shadow-sm: 0 2px 8px rgba(108, 71, 255, 0.05);
+  --shadow-card: 0 10px 25px -5px rgba(30, 27, 75, 0.06), 0 8px 10px -6px rgba(30, 27, 75, 0.04);
+  --shadow-hover: 0 16px 32px -8px rgba(108, 71, 255, 0.16);
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-full: 9999px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  background-color: var(--bg-page);
+  color: var(--text-main);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input, select, textarea {
+  font-family: inherit;
+  font-size: 1rem;
+}
+
+a {
+  color: var(--primary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* Common Flexbox Container */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px;
+}
+
+/* Common Button Styles */
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: var(--radius-md);
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.2s ease;
+}
+
+.button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+.button-primary {
+  background: var(--primary-gradient);
+  color: var(--text-white);
+  box-shadow: 0 4px 14px rgba(108, 71, 255, 0.35);
+}
+
+.button-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #6d28d9 0%, #5835e5 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(108, 71, 255, 0.42);
+}
+
+.button-secondary {
+  background: #ffffff;
+  color: var(--text-main);
+  border: 1px solid var(--border-light);
+}
+
+.button-secondary:hover:not(:disabled) {
+  background: var(--primary-light);
+  border-color: var(--primary);
+  color: var(--primary);
+}
+
+.button-danger {
+  background: #fff1f2;
+  color: #e11d48;
+  border: 1px solid #fecdd3;
+}
+
+.button-danger:hover:not(:disabled) {
+  background: #ffe4e6;
+  color: #be123c;
 }
