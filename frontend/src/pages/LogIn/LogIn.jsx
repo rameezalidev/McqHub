@@ -12,7 +12,7 @@ function LogIn() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
+console.log(API_URL)
   async function handleSubmit(e) {
     e.preventDefault();
     setMessage("");
