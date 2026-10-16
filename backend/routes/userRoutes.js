@@ -9,6 +9,6 @@ router.get('/categories/:categoryId/questions',auth, getQuestionByCategory);
 router.post('/quizzes/submit',auth, submitQuiz);
 router.get('/quizzes/history',auth,getQuizHistory);
 router.delete('/quizzes/:attemptId', auth, deleteQuizHistory);
-router.get('/dashboard/stats', auth, getDashboardStats);
+router.get('/dashboard/stats',auth, getDashboardStats);
 
 module.exports = router;

@@ -175,7 +175,15 @@ const deleteQuizHistory = async (req, res) => {
 
 const getDashboardStats = async (req, res) => {
     try {
-        const userId = req.user.userId;
+        const userId = req.user?.userId;
+
+        console.log('Dashboard stats request for user:', userId);
+
+        if (!userId) {
+            return res.status(401).json({
+                message: 'User not authenticated'
+            });
+        }
 
         const stats = await QuizAttempt.aggregate([
             {
@@ -201,24 +209,17 @@ const getDashboardStats = async (req, res) => {
             }
         ]);
 
-        const result = stats[0];
+        const result = stats[0] || {};
 
         return res.status(200).json({
-            totalQuizzes: result?.totalQuizzes || 0,
-            bestPercentage: Number(
-                (result?.bestPercentage || 0).toFixed(2)
-            ),
-            accuracy: result?.totalQuestions
-                ? Number(
-                    (
-                        result.totalCorrect /
-                        result.totalQuestions *
-                        100
-                    ).toFixed(2)
-                )
+            totalQuizzes: result.totalQuizzes || 0,
+            bestPercentage: Number((result.bestPercentage || 0).toFixed(2)),
+            accuracy: result.totalQuestions
+                ? Number(((result.totalCorrect || 0) / result.totalQuestions * 100).toFixed(2))
                 : 0
         });
     } catch (error) {
+        console.error('getDashboardStats error:', error);
         return res.status(500).json({
             message: 'Internal server error'
         });

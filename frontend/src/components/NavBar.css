@@ -1,0 +1,15 @@
+.nav-bar ul {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgb(42, 42, 129);
+    padding: 20px;
+    color: white;
+}
+.nav-bar ul button {
+    padding: 15px;
+    margin: 0px 10px;
+    border-radius: 25px;
+    border: none;
+    cursor: pointer;
+    color: darkblue;
+}
