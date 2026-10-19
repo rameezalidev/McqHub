@@ -1,17 +1,13 @@
-function formatDate(dateStr) {
-  if (!dateStr) return "Recently";
-  try {
-    const d = new Date(dateStr);
-    return d.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
-      year: "numeric",
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  } catch {
-    return dateStr;
-  }
+function formatDate(date) {
+  return new Date(date).toLocaleString("en-PK", {
+    timeZone: "Asia/Karachi",
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: true,
+  });
 }
 
 function HistoryItem({ score, totalQuestions = 10, createdAt, onDelete }) {
