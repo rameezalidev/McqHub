@@ -1,152 +1,28 @@
-const Category = require('../models/categoryModel');
-const Question = require('../models/questionModel');
-const mongoose = require('mongoose');
-const addCategory = async (req, res) => {
-    const { name, description } = req.body;
-    console.log("In add cat")
-    try {
-        if (!name) {
-            return res.status(400).json({ message: 'Name is required' });
-        }
-        await Category.create({
-            name,
-            description
-        });
+const adminService = require('../services/adminService');
 
-        return res.status(200).json({
-            message: "Category added",
-            data: {
-                name, description
-            }
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
-    }
-}
+const addCategory = async (req, res) => {
+    const result = await adminService.addCategory(req.body);
+    return res.status(result.status).json(result.data);
+};
 
 const deleteCategory = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const category = await Category.findByIdAndDelete(id);
-        if (!category) {
-            return res.status(404).json({
-                message: 'Category not found'
-            });
-        }
-
-        return res.status(200).json({
-            message: 'Category deleted successfully'
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
-    }
-}
+    const result = await adminService.deleteCategory(req.params.id);
+    return res.status(result.status).json(result.data);
+};
 
 const addQuestion = async (req, res) => {
-    try {
-        const { question, options, correctAnswer, difficultyLevel } = req.body;
-        const { categoryId } = req.params;
-        if (!mongoose.isValidObjectId(categoryId)) {
-            return res.status(400).json({
-                message: 'Invalid category ID'
-            });
-        }
-
-        const category = await Category.findOne({
-            _id: categoryId,
-            isActive: true
-        });
-
-        if (!category) {
-            return res.status(404).json({
-                message: 'Category not found or inactive'
-            });
-        }
-
-        const newQuestion = await Question.create({
-            category: category._id,
-            question,
-            options,
-            correctAnswer,
-            difficultyLevel
-        });
-
-        return res.status(201).json({
-            message: 'Question created successfully',
-            question: newQuestion
-        });
-    } catch (error) {
-        if (error.name === 'ValidationError') {
-            return res.status(400).json({
-                message: error.message
-            });
-        }
-
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
-    }
-}
+    const result = await adminService.addQuestion(req.params, req.body);
+    return res.status(result.status).json(result.data);
+};
 
 const deleteQuestion = async (req, res) => {
-    const { categoryId, questionId } = req.params;
-
-    try {
-        if (
-            !mongoose.isValidObjectId(categoryId) ||
-            !mongoose.isValidObjectId(questionId)
-        ) {
-            return res.status(400).json({
-                message: 'Invalid category ID or question ID'
-            });
-        }
-
-        const question = await Question.findOneAndDelete({
-            _id: questionId,
-            category: categoryId
-        });
-
-        if (!question) {
-            return res.status(404).json({
-                message: 'Question not found in this category'
-            });
-        }
-
-        return res.status(200).json({
-            message: 'Question deleted successfully'
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
-    }
+    const result = await adminService.deleteQuestion(req.params);
+    return res.status(result.status).json(result.data);
 };
 
 const getQuestionsByCategory = async (req, res) => {
-    const { categoryId } = req.params;
-
-    try {
-        if (!mongoose.isValidObjectId(categoryId)) {
-            return res.status(400).json({
-                message: 'Invalid category ID'
-            });
-        }
-
-        const questions = await Question.find({ category: categoryId });
-
-        return res.status(200).json({
-            message: 'Questions retrieved successfully',
-            data: questions
-        });
-    } catch (error) {
-        return res.status(500).json({
-            message: 'Internal server error'
-        });
-    }
+    const result = await adminService.getQuestionsByCategory(req.params);
+    return res.status(result.status).json(result.data);
 };
 
 module.exports = { addCategory, deleteCategory, addQuestion, deleteQuestion, getQuestionsByCategory };

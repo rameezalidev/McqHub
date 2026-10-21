@@ -71,9 +71,7 @@ function Dashboard() {
 
     fetchData();
 
-    return () => {
-      isMounted = false;
-    };
+    () => isMounted = false;
   }, [token]);
 
   // Refresh data after deleting a history record
