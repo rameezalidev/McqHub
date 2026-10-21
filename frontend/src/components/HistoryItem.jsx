@@ -1,5 +1,11 @@
 function formatDate(date) {
-  return new Date(date).toLocaleString("en-PK", {
+  const parsedDate = new Date(date);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "Invalid date";
+  }
+
+  return new Intl.DateTimeFormat("en-PK", {
     timeZone: "Asia/Karachi",
     day: "2-digit",
     month: "short",
@@ -7,7 +13,7 @@ function formatDate(date) {
     hour: "2-digit",
     minute: "2-digit",
     hour12: true,
-  });
+  }).format(parsedDate);
 }
 
 function HistoryItem({ score, totalQuestions = 10, createdAt, onDelete }) {

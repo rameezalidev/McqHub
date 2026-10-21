@@ -148,7 +148,6 @@ function Dashboard() {
           {/* Hero Welcome Banner */}
           <div className="dashboard-hero">
             <div className="hero-content">
-              <span className="hero-greeting-tag">Welcome back 👋</span>
               <h2 className="hero-title">
                 Good day, {user.name || "Student"}
               </h2>
@@ -160,20 +159,7 @@ function Dashboard() {
               </a>
             </div>
 
-            <div className="hero-badge-box">
-              <div className="hero-plant-icon">
-                <svg width="36" height="36" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 22V12" stroke="#ff6b4a" strokeWidth="2" strokeLinecap="round" />
-                  <path d="M12 12C12 7 7 6 7 6C7 11 12 12 12 12Z" fill="#ffedd5" stroke="#ff6b4a" strokeWidth="1.5" />
-                  <path d="M12 9C12 5 17 4 17 4C17 9 12 9 12 9Z" fill="#ede9fe" stroke="#7c3aed" strokeWidth="1.5" />
-                  <path d="M7 22H17" stroke="#94a3b8" strokeWidth="2" strokeLinecap="round" />
-                </svg>
-              </div>
-              <div className="hero-badge-text">
-                <strong>Small steps</strong>
-                <span>make big progress</span>
-              </div>
-            </div>
+           
           </div>
 
           {/* Stats Row */}
