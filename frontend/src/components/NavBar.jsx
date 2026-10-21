@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { BrandLogoIcon } from "./icons/Icons";
 import "./NavBar.css";
 
 function NavBar({ showDashboardLink = true }) {
@@ -15,10 +16,7 @@ function NavBar({ showDashboardLink = true }) {
       <div className="navbar-container">
         <div className="navbar-brand" onClick={() => showDashboardLink && navigate("/dashboard")}>
           <div className="navbar-logo">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M12 3L1 9L12 15L21 10.09V17H23V9L12 3Z" fill="currentColor" />
-              <path d="M5 13.18V17.18C5 19.94 8.13 22.18 12 22.18C15.87 22.18 19 19.94 19 17.18V13.18L12 17L5 13.18Z" fill="currentColor" opacity="0.8" />
-            </svg>
+            <BrandLogoIcon width="24" height="24" />
           </div>
           <div className="navbar-title">
             <span className="brand-name">MCQHub</span>

@@ -2,8 +2,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import QuizOption from "../../components/QuizOption";
-import NavBar from "../../components/NavBar";
-import "./Quiz.css";
+import NavBar from "../../components/NavBar";import { AutosaveIcon, NoQuestionsIcon, QuizTimerIcon, TrophyIcon } from "../../components/icons/Icons";import "./Quiz.css";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -347,11 +346,7 @@ function Quiz() {
                 /* 2. No Questions in Category / DB */
                 <div className="empty-state-card" style={{ padding: "40px 24px", textAlign: "center" }}>
                   <div className="empty-icon" style={{ marginBottom: "14px", color: "var(--accent)" }}>
-                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                      <circle cx="12" cy="12" r="10" />
-                      <line x1="12" y1="8" x2="12" y2="12" />
-                      <line x1="12" y1="16" x2="12.01" y2="16" />
-                    </svg>
+                    <NoQuestionsIcon />
                   </div>
                   <h3 style={{ fontSize: "1.3rem", fontWeight: 700, margin: "0 0 8px", color: "var(--text-main)" }}>
                     No Questions Found
@@ -408,10 +403,7 @@ function Quiz() {
                     </div>
 
                     <div className={`quiz-timer-badge ${timeLeft <= 10 ? "timer-warning" : ""}`}>
-                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <circle cx="12" cy="12" r="10" />
-                        <polyline points="12 6 12 12 16 14" />
-                      </svg>
+                      <QuizTimerIcon />
                       <span className="timer-text">{formattedTimer}</span>
                     </div>
                   </div>
@@ -450,11 +442,7 @@ function Quiz() {
                     </button>
 
                     <div className="quiz-autosave-indicator">
-                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
-                        <polyline points="17 21 17 13 7 13 7 21" />
-                        <polyline points="7 3 7 8 15 8" />
-                      </svg>
+                      <AutosaveIcon />
                       {/* <span>60s per question • Progress auto-saved</span> */}
                     </div>
 
@@ -485,13 +473,7 @@ function Quiz() {
             <div className="result-card">
               <div className="result-header">
                 <div className="result-trophy-icon">
-                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path d="M6 9H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h2" />
-                    <path d="M18 9h2a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2h-2" />
-                    <path d="M4 22h16" />
-                    <path d="M10 14.66V17c0 .55-.45 1-1 1H7c-.55 0-1 .45-1 1v1c0 .55.45 1 1 1h10c.55 0 1-.45 1-1v-1c0-.55-.45-1-1-1h-2c-.55 0-1-.45-1-1v-2.34" />
-                    <path d="M6 3h12v7a6 6 0 0 1-12 0V3z" />
-                  </svg>
+                  <TrophyIcon />
                 </div>
                 <h2 className="result-title">Quiz Completed!</h2>
                 <p className="result-subtitle">
