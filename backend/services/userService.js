@@ -1,12 +1,10 @@
 const mongoose = require('mongoose');
-const Category = require('../models/categoryModel');
-const Question = require('../models/questionModel');
-const QuizAttempt = require('../models/quizAttemptModel');
 const { MESSAGES } = require('../constants/messages');
+const userRepository = require('./repositories/userRepository');
 
 const getCategories = async () => {
     try {
-        const result = await Category.find();
+        const result = await userRepository.getCategories();
 
         return {
             status: 200,
@@ -36,21 +34,7 @@ const getQuestionByCategory = async (categoryId) => {
             };
         }
 
-        const questions = await Question.aggregate([
-            {
-                $match: {
-                    category: new mongoose.Types.ObjectId(categoryId)
-                }
-            },
-            {
-                $sample: { size: 10 }
-            },
-            {
-                $project: {
-                    correctAnswer: 0
-                }
-            }
-        ]);
+        const questions = await userRepository.getQuestionByCategory(categoryId);
 
         return {
             status: 200,
@@ -77,10 +61,7 @@ const submitQuiz = async (categoryId, answers, userId) => {
         let questions = [];
 
         for (const el of answers) {
-            const question = await Question.findOne({
-                _id: el.questionId,
-                category: categoryId
-            });
+            const question = await userRepository.getQuestionByCategoryAndId(el.questionId, categoryId);
 
             if (!question) {
                 return {
@@ -108,7 +89,7 @@ const submitQuiz = async (categoryId, answers, userId) => {
 
         const totalQuestions = answers.length;
 
-        await QuizAttempt.create({
+        await userRepository.createQuizAttempt({
             user: userId,
             category: categoryId,
             questions,
@@ -140,7 +121,7 @@ const submitQuiz = async (categoryId, answers, userId) => {
 
 const getQuizHistory = async (userId) => {
     try {
-        const result = await QuizAttempt.find({ user: userId });
+        const result = await userRepository.getQuizHistory(userId);
 
         return {
             status: 200,
@@ -171,10 +152,7 @@ const deleteQuizHistory = async (attemptId, userId) => {
             };
         }
 
-        const result = await QuizAttempt.findOneAndDelete({
-            _id: attemptId,
-            user: userId
-        });
+        const result = await userRepository.deleteQuizHistory(attemptId, userId);
 
         if (!result) {
             return {
@@ -217,29 +195,7 @@ const getDashboardStats = async (userId) => {
             };
         }
 
-        const stats = await QuizAttempt.aggregate([
-            {
-                $match: {
-                    user: new mongoose.Types.ObjectId(userId)
-                }
-            },
-            {
-                $group: {
-                    _id: null,
-                    totalQuizzes: { $sum: 1 },
-                    totalCorrect: { $sum: '$score' },
-                    totalQuestions: { $sum: '$totalQuestions' },
-                    bestPercentage: {
-                        $max: {
-                            $multiply: [
-                                { $divide: ['$score', '$totalQuestions'] },
-                                100
-                            ]
-                        }
-                    }
-                }
-            }
-        ]);
+        const stats = await userRepository.getDashboardStats(userId);
 
         const result = stats[0] || {};
 

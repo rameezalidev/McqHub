@@ -1,7 +1,6 @@
-const Category = require('../models/categoryModel');
-const Question = require('../models/questionModel');
 const mongoose = require('mongoose');
 const { MESSAGES } = require('../constants/messages');
+const adminRepository = require('./repositories/adminRepository');
 
 const addCategory = async (body) => {
     const { name, description } = body;
@@ -11,7 +10,7 @@ const addCategory = async (body) => {
             return { status: 400, data: { message: MESSAGES.ADMIN.CATEGORY_REQUIRED } };
         }
 
-        await Category.create({
+        await adminRepository.addCategory({
             name,
             description
         });
@@ -38,7 +37,7 @@ const addCategory = async (body) => {
 
 const deleteCategory = async (id) => {
     try {
-        const category = await Category.findByIdAndDelete(id);
+        const category = await adminRepository.deleteCategory(id);
 
         if (!category) {
             return {
@@ -79,10 +78,7 @@ const addQuestion = async (params, body) => {
             };
         }
 
-        const category = await Category.findOne({
-            _id: categoryId,
-            isActive: true
-        });
+        const category = await adminRepository.getCategoryByIdAndActive(categoryId);
 
         if (!category) {
             return {
@@ -93,7 +89,7 @@ const addQuestion = async (params, body) => {
             };
         }
 
-        const newQuestion = await Question.create({
+        const newQuestion = await adminRepository.addQuestion({
             category: category._id,
             question,
             options,
@@ -143,10 +139,7 @@ const deleteQuestion = async (params) => {
             };
         }
 
-        const question = await Question.findOneAndDelete({
-            _id: questionId,
-            category: categoryId
-        });
+        const question = await adminRepository.deleteQuestion(categoryId, questionId);
 
         if (!question) {
             return {
@@ -186,7 +179,7 @@ const getQuestionsByCategory = async (params) => {
             };
         }
 
-        const questions = await Question.find({ category: categoryId });
+        const questions = await adminRepository.getQuestionsByCategory(categoryId);
 
         return {
             status: 200,

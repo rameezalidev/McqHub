@@ -1,7 +1,7 @@
-const User = require('../models/userModel');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 const { MESSAGES } = require('../constants/messages');
+const authRepository = require('./repositories/authRepository');
 
 const signUp = async (body) => {
     try {
@@ -40,9 +40,7 @@ const signUp = async (body) => {
             };
         }
 
-        const existingUser = await User.findOne({
-            email: email.trim().toLowerCase()
-        });
+        const existingUser = await authRepository.findUserByEmail(email);
 
         if (existingUser) {
             return {
@@ -53,7 +51,7 @@ const signUp = async (body) => {
             };
         }
 
-        await User.create({
+        await authRepository.createUser({
             name: name.trim(),
             email: email.trim().toLowerCase(),
             password
@@ -97,9 +95,7 @@ const logIn = async (body) => {
             };
         }
 
-        const user = await User.findOne({
-            email: email.trim().toLowerCase()
-        }).select('+password');
+        const user = await authRepository.findUserByEmailWithPassword(email);
 
         if (!user) {
             return {
@@ -157,7 +153,7 @@ const logIn = async (body) => {
 
 const getMyProfile = async (userId) => {
     try {
-        const user = await User.findById(userId);
+        const user = await authRepository.findUserById(userId);
 
         if (!user) {
             return {
