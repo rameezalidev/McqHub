@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import toast from "react-hot-toast";
 import NavBar from "../../components/NavBar";
+import { useFetch } from "../../hooks/useFetch";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
@@ -23,6 +24,7 @@ function Admin() {
   const [isSubmittingQ, setIsSubmittingQ] = useState(false);
 
   const token = localStorage.getItem("token");
+  const { execute } = useFetch();
 
   useEffect(() => {
     if (!token) return;
@@ -30,12 +32,14 @@ function Admin() {
 
     async function loadCategories() {
       try {
-        const response = await fetch(`${API_URL}/api/users/categories`, {
+        const result = await execute({
+          url: `${API_URL}/api/users/categories`,
           headers: { Authorization: `Bearer ${token}` },
+          throwOnError: false,
         });
-        const data = await response.json();
+
         if (isMounted) {
-          setCategories(data.data || []);
+          setCategories(result.data?.data || []);
         }
       } catch (error) {
         console.error("Fetch categories error:", error);
@@ -47,33 +51,33 @@ function Admin() {
     return () => {
       isMounted = false;
     };
-  }, [token]);
+  }, [execute, token]);
 
-  // Fetch questions for selected category
   const fetchCategoryQuestions = useCallback(async (catId) => {
     setLoadingQuestions(true);
     try {
-      // First try the admin questions route
-      let response = await fetch(`${API_URL}/api/admin/categories/${catId}/questions`, {
+      let result = await execute({
+        url: `${API_URL}/api/admin/categories/${catId}/questions`,
         headers: { Authorization: `Bearer ${token}` },
+        throwOnError: false,
       });
 
-      if (!response.ok) {
-        // Fallback to user questions endpoint if needed
-        response = await fetch(`${API_URL}/api/users/categories/${catId}/questions`, {
+      if (!result.response.ok) {
+        result = await execute({
+          url: `${API_URL}/api/users/categories/${catId}/questions`,
           headers: { Authorization: `Bearer ${token}` },
+          throwOnError: false,
         });
       }
 
-      const data = await response.json();
-      setQuestions(data.data || []);
+      setQuestions(result.data?.data || []);
     } catch (err) {
       console.error("Fetch questions error:", err);
       setQuestions([]);
     } finally {
       setLoadingQuestions(false);
     }
-  }, [token]);
+  }, [execute, token]);
 
   // When a category is opened, fetch its questions
   function handleOpenCategory(cat) {
@@ -91,53 +95,57 @@ function Admin() {
 
   async function refreshCategories() {
     try {
-      const response = await fetch(`${API_URL}/api/users/categories`, {
+      const result = await execute({
+        url: `${API_URL}/api/users/categories`,
         headers: { Authorization: `Bearer ${token}` },
+        throwOnError: false,
       });
-      const data = await response.json();
-      setCategories(data.data || []);
+      setCategories(result.data?.data || []);
     } catch (error) {
       console.error("Fetch categories error:", error);
     }
   }
 
-  // Add a new Category
   async function handleAddCategory(e) {
     e.preventDefault();
     if (!catName.trim()) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/admin/categories`, {
+      const result = await execute({
+        url: `${API_URL}/api/admin/categories`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ name: catName.trim() }),
+        throwOnError: false,
       });
-      const data = await response.json();
-      if (response.ok) {
+
+      if (result.response.ok) {
         setMessage(`Category "${catName}" added successfully!`);
         setCatName("");
         refreshCategories();
       } else {
-        setMessage(data.message || "Failed to add category");
+        setMessage(result.data?.message || "Failed to add category");
       }
     } catch (err) {
       setMessage("Error adding category: " + err.message);
     }
   }
 
-  // Delete Category
   async function handleDeleteCategory(id) {
     if (!window.confirm("Are you sure you want to delete this category?")) return;
 
     try {
-      const response = await fetch(`${API_URL}/api/admin/categories/${id}`, {
+      const result = await execute({
+        url: `${API_URL}/api/admin/categories/${id}`,
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
+        throwOnError: false,
       });
-      if (response.ok) {
+
+      if (result.response.ok) {
         setMessage("Category deleted successfully");
         refreshCategories();
         if (selectedCategory?._id === id) {
@@ -149,7 +157,6 @@ function Admin() {
     }
   }
 
-  // Add Question to specific category
   async function handleAddQuestion(e) {
     e.preventDefault();
     if (!selectedCategory) return;
@@ -167,7 +174,8 @@ function Admin() {
     setMessage("");
 
     try {
-      const response = await fetch(`${API_URL}/api/admin/categories/${selectedCategory._id}/questions`, {
+      const result = await execute({
+        url: `${API_URL}/api/admin/categories/${selectedCategory._id}/questions`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -179,11 +187,10 @@ function Admin() {
           correctAnswer,
           difficultyLevel: difficulty,
         }),
+        throwOnError: false,
       });
 
-      const data = await response.json();
-
-      if (response.ok) {
+      if (result.response.ok) {
         setMessage("Question added successfully!");
         setQTitle("");
         setOpt1("");
@@ -193,7 +200,7 @@ function Admin() {
         setCorrectOptionIdx(0);
         fetchCategoryQuestions(selectedCategory._id);
       } else {
-        setMessage(data.message || "Failed to add question");
+        setMessage(result.data?.message || "Failed to add question");
       }
     } catch (err) {
       setMessage("Error adding question: " + err.message);
@@ -202,25 +209,22 @@ function Admin() {
     }
   }
 
-  // Delete Question
   async function handleDeleteQuestion(questionId) {
     if (!window.confirm("Are you sure you want to delete this question?")) return;
 
     try {
-      const response = await fetch(
-        `${API_URL}/api/admin/categories/${selectedCategory._id}/questions/${questionId}`,
-        {
-          method: "DELETE",
-          headers: { Authorization: `Bearer ${token}` },
-        }
-      );
+      const result = await execute({
+        url: `${API_URL}/api/admin/categories/${selectedCategory._id}/questions/${questionId}`,
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+        throwOnError: false,
+      });
 
-      if (response.ok) {
+      if (result.response.ok) {
         setMessage("Question deleted successfully!");
         fetchCategoryQuestions(selectedCategory._id);
       } else {
-        const data = await response.json();
-        alert(data.message || "Failed to delete question");
+        alert(result.data?.message || "Failed to delete question");
       }
     } catch (err) {
       console.error(err);

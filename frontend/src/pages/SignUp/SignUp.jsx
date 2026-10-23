@@ -1,197 +1,127 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { useReducer } from "react";
+import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { AuthIllustration, BrandLogoIcon } from "../../components/icons/Icons";
+import { AUTH_CONFIG, AUTH_ENDPOINTS, AUTH_TEXT } from "../../constants/auth";
+import { ROUTES } from "../../constants/routes";
+import { useFetch } from "../../hooks/useFetch";
+import AuthBrandPanel from "./components/AuthBrandPanel";
+import AuthFormPanel from "./components/AuthFormPanel";
 import "./SignUp.css";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const initialState = {
+  name: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+  showPassword: false,
+  isSubmitting: false,
+  message: "",
+  isSuccess: false,
+};
+
+function formReducer(state, action) {
+  switch (action.type) {
+    case "FIELD_CHANGE":
+      return {
+        ...state,
+        [action.field]: action.value,
+      };
+    case "TOGGLE_PASSWORD_VISIBILITY":
+      return {
+        ...state,
+        showPassword: !state.showPassword,
+      };
+    case "SUBMIT_START":
+      return {
+        ...state,
+        message: "",
+        isSuccess: false,
+        isSubmitting: true,
+      };
+    case "SUBMIT_FAILURE":
+      return {
+        ...state,
+        message: action.message,
+        isSuccess: false,
+        isSubmitting: false,
+      };
+    case "SUBMIT_SUCCESS":
+      return {
+        ...state,
+        name: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
+        message: action.message,
+        isSuccess: true,
+        isSubmitting: false,
+      };
+    default:
+      return state;
+  }
+}
 
 function SignUp() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [message, setMessage] = useState("");
-  const [isSuccess, setIsSuccess] = useState(false);
+  const [formState, dispatch] = useReducer(formReducer, initialState);
   const navigate = useNavigate();
+  const { execute } = useFetch();
 
   async function handleSubmit(e) {
     e.preventDefault();
-    setMessage("");
-    setIsSuccess(false);
+    dispatch({ type: "SUBMIT_START" });
 
-    if (password !== confirmPassword) {
-      const msg = "Passwords do not match!";
-      setMessage(msg);
+    if (formState.password !== formState.confirmPassword) {
+      const msg = AUTH_TEXT.PASSWORDS_DO_NOT_MATCH;
+      dispatch({ type: "SUBMIT_FAILURE", message: msg });
       toast.error(msg);
       return;
     }
 
-    setIsSubmitting(true);
-
     try {
-      const response = await fetch(`${API_URL}/api/auth/signup`, {
+      const result = await execute({
+        url: `${AUTH_CONFIG.API_BASE_URL}${AUTH_ENDPOINTS.SIGNUP}`,
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          name,
-          email,
-          password,
-          confirmPassword,
+          name: formState.name,
+          email: formState.email,
+          password: formState.password,
+          confirmPassword: formState.confirmPassword,
         }),
+        throwOnError: false,
       });
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Signup failed");
+      if (!result.response.ok) {
+        throw new Error(result.data?.message || AUTH_TEXT.SIGNUP_FAILED);
       }
 
-      setIsSuccess(true);
-      const successMsg = "Account created successfully! Redirecting to login...";
-      setMessage(successMsg);
+      const successMsg = AUTH_TEXT.SIGNUP_SUCCESS;
+      dispatch({ type: "SUBMIT_SUCCESS", message: successMsg });
       toast.success(successMsg);
-      setName("");
-      setEmail("");
-      setPassword("");
-      setConfirmPassword("");
 
       setTimeout(() => {
-        navigate("/login");
+        navigate(ROUTES.LOGIN);
       }, 1500);
     } catch (error) {
-      const errMsg = error.message || "Something went wrong";
-      setMessage(errMsg);
+      const errMsg = error.message || AUTH_TEXT.GENERIC_ERROR;
+      dispatch({ type: "SUBMIT_FAILURE", message: errMsg });
       toast.error(errMsg);
-    } finally {
-      setIsSubmitting(false);
     }
   }
 
   return (
     <div className="auth-container">
       <div className="auth-card">
-        {/* Left Visual Column */}
-        <div className="auth-side-brand">
-          <div className="auth-logo-badge">
-            <BrandLogoIcon width="28" height="28" />
-            <div>
-              <h3>MCQHub</h3>
-              <p>Learn • Practice • Improve</p>
-            </div>
-          </div>
+        <AuthBrandPanel />
 
-          <div className="auth-hero-text">
-            <h2>Create your account</h2>
-            <p>Join MCQHub and start your learning journey today.</p>
-          </div>
-
-          <div className="auth-illustration">
-            <AuthIllustration />
-          </div>
-        </div>
-
-        {/* Right Form Column */}
-        <div className="auth-side-form">
-          <div className="auth-tabs">
-            <button type="button" className="auth-tab" onClick={() => navigate("/login")}>
-              Login
-            </button>
-            <button type="button" className="auth-tab active">
-              Sign Up
-            </button>
-          </div>
-
-          <div className="auth-header">
-            <h3>Start practicing today</h3>
-            <p>Create your free student account in seconds.</p>
-          </div>
-
-          <form className="auth-form" onSubmit={handleSubmit}>
-            <div className="form-group">
-              <label>Full Name</label>
-              <div className="input-wrapper">
-                <input
-                  className="input-field"
-                  type="text"
-                  placeholder="John Doe"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Email Address</label>
-              <div className="input-wrapper">
-                <input
-                  className="input-field"
-                  type="email"
-                  placeholder="you@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Password</label>
-              <div className="input-wrapper">
-                <input
-                  className="input-field"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Create a password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <button
-                  type="button"
-                  className="password-toggle"
-                  onClick={() => setShowPassword(!showPassword)}
-                  aria-label="Toggle password visibility"
-                >
-                  {showPassword ? "Hide" : "Show"}
-                </button>
-              </div>
-            </div>
-
-            <div className="form-group">
-              <label>Confirm Password</label>
-              <div className="input-wrapper">
-                <input
-                  className="input-field"
-                  type={showPassword ? "text" : "password"}
-                  placeholder="Confirm your password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
-                />
-              </div>
-            </div>
-
-            {message && (
-              <div className={`form-alert ${isSuccess ? "alert-success" : "alert-error"}`}>
-                {message}
-              </div>
-            )}
-
-            <button type="submit" className="button button-primary auth-submit" disabled={isSubmitting}>
-              {isSubmitting ? "Creating Account..." : "Create Account →"}
-            </button>
-
-            <div className="auth-footer">
-              <span>Already have an account? </span>
-              <Link to="/login">Login</Link>
-            </div>
-          </form>
-        </div>
+        <AuthFormPanel
+          formState={formState}
+          dispatch={dispatch}
+          handleSubmit={handleSubmit}
+          navigate={navigate}
+        />
       </div>
     </div>
   );
